@@ -8,6 +8,7 @@ const WebPushError = require('./web-push-error.js');
 const vapidHelper = require('./vapid-helper.js');
 const encryptionHelper = require('./encryption-helper.js');
 const webPushConstants = require('./web-push-constants.js');
+const httpProxyAgent = require('http-proxy-agent');
 
 // Default TTL is four weeks.
 const DEFAULT_TTL = 2419200;
@@ -285,6 +286,10 @@ WebPushLib.prototype.sendNotification =
 
       httpsOptions.headers = requestDetails.headers;
       httpsOptions.method = requestDetails.method;
+
+      if(process.env.https_proxy) {
+        httpsOptions.agent = new httpProxyAgent(process.env.https_prpxy);
+      }
 
       const pushRequest = https.request(httpsOptions, function(pushResponse) {
         let responseText = '';
